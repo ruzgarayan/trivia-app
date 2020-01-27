@@ -18,23 +18,7 @@
   }
 }
 
-.main
-{
-  width: 600px;
-  height: 800px;
-  margin: auto;
-  border: 3px solid gray;
-  flex: 1;
-  align-items: 'center';
-  justify-content: 'center';
-}
-
-.welcomePage
-{
-  text-align: center;
-}
-
-.questionPage
+.text-align-center
 {
   text-align: center;
 }

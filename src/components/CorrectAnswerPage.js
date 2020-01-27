@@ -3,7 +3,7 @@ import React from 'react'
 function CorrectAnswerPage(props) {
     return (
         
-        <div className="answerPage">
+        <div className="text-align-center">
 
             <div>
                 Correct!

@@ -49,7 +49,7 @@ class QuestionPage extends React.Component
     render() {
         return (
             
-            <div className="questionPage">
+            <div className="text-align-center">
 
                 <InfoBar 
                     currentQuestionIndex={this.props.currentQuestionIndex}

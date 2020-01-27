@@ -3,7 +3,7 @@ import React from 'react'
 function TimeIsUpPage(props) {
     return (
 
-        <div className="timeIsUpPage">
+        <div className="text-align-center">
             <div>
                 You have run out of time.
             </div>

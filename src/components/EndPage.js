@@ -3,7 +3,7 @@ import React from 'react'
 function EndPage(props) {
     return (
 
-        <div className="endPage">
+        <div className="text-align-center">
 
             <div>
                 You have finished the game with a total of {props.score} points.

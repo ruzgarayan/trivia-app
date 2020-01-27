@@ -30,7 +30,7 @@ function WelcomePage(props) {
     }
 
     return (
-        <div className="welcomePage">
+        <div className="text-align-center">
             <img src={logo} className="App-logo" alt="logo" />
             <h1>A TRIVIA GAME</h1>
             <button
