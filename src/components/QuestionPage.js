@@ -66,37 +66,45 @@ class QuestionPage extends React.Component
 
                 <div className ="up-down-50-margin">
                     <Button 
-                        fluid ="true" size="massive" 
+                        fluid="true" size="massive" 
+                        negative={this.state.answersToShow[0] ? false : true}
+                        disabled={this.state.answersToShow[0] ? false : true}
                         onClick={() => this.props.answerQuestion(this.state.answers[0])}
                     >
-                        {this.state.answersToShow[0] ? (this.state.answers[0]) : ('')}
+                        {this.state.answers[0]}
                     </Button>
                 </div>
 
                 <div className ="up-down-50-margin">
                     <Button 
                         fluid ="true" size="massive" 
+                        negative={this.state.answersToShow[1] ? false : true}
+                        disabled={this.state.answersToShow[1] ? false : true}
                         onClick={() => this.props.answerQuestion(this.state.answers[1])}
                     >
-                        {this.state.answersToShow[1] ? (this.state.answers[1]) : ('')}
+                        {this.state.answers[1]}
                     </Button>
                 </div>
 
                 <div className ="up-down-50-margin">
                     <Button 
                         fluid ="true" size="massive"
+                        negative={this.state.answersToShow[2] ? false : true}
+                        disabled={this.state.answersToShow[2] ? false : true}
                         onClick={() => this.props.answerQuestion(this.state.answers[2])}
                     >
-                        {this.state.answersToShow[2] ? (this.state.answers[2]) : ('')}
+                        {this.state.answers[2]}
                     </Button>
                 </div>
 
                 <div className ="up-down-50-margin">
                     <Button 
                         fluid ="true" size="massive"
+                        negative={this.state.answersToShow[3] ? false : true}
+                        disabled={this.state.answersToShow[3] ? false : true}
                         onClick={() => this.props.answerQuestion(this.state.answers[3])}
                     >
-                        {this.state.answersToShow[3] ? (this.state.answers[3]) : ('')}
+                        {this.state.answers[3]}
                     </Button>
                 </div>
 

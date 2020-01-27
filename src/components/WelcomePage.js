@@ -3,6 +3,7 @@ import logo from './logo.svg'
 import DropdownButton from 'react-bootstrap/DropdownButton'
 import Dropdown from 'react-bootstrap/Dropdown'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import { Button } from 'semantic-ui-react'
 
 function WelcomePage(props) {
 
@@ -33,12 +34,15 @@ function WelcomePage(props) {
         <div className="text-align-center">
             <img src={logo} className="App-logo" alt="logo" />
             <h1>A TRIVIA GAME</h1>
-            <button
-                className="generalButton"
-                onClick={() => props.onClickStartGame()}
-            >
-                GET STARTED
-                </button>
+            <div className ="up-down-50-margin">
+                <Button
+                    size="massive"
+                    onClick={() => props.onClickStartGame()}
+                    loading={props.isLoading ? true : false} 
+                >
+                    GET STARTED
+                </Button>
+            </div>
 
             <h3>Difficulty:</h3>
 

@@ -1,10 +1,8 @@
 import React from 'react';
 import './App.css';
 import WelcomePage from './components/WelcomePage'
-import LoadingPage from './components/LoadingPage'
 import QuestionPage from './components/QuestionPage'
 import CorrectAnswerPage from './components/CorrectAnswerPage';
-import TimeIsUpPage from './components/TimeIsUpPage';
 import EndPage from './components/EndPage';
 
 const TIME_PER_QUESTION = 15;
@@ -22,6 +20,7 @@ class App extends React.Component {
       remainingTime: TIME_PER_QUESTION,
       gameTimer: null,
       loadTimer: null,
+      isLoading: false,
       isJokerUsed: false,
       settings: {
         difficulty: 'Any',
@@ -37,17 +36,11 @@ class App extends React.Component {
           <WelcomePage 
             currentDifficulty={this.state.settings.difficulty}
             currentCategory={this.state.settings.category}
+            isLoading={this.state.isLoading}
             onClickStartGame={() => this.loadQuestions()}
             changeDifficulty={(difficulty) => this.changeDifficulty(difficulty)}
             changeCategory={(category) => this.changeCategory(category)}
           />
-        </div>
-      );
-    }
-    else if (this.state.currentPage === 'LoadingPage') {
-      return (
-        <div className="ui container">
-          <LoadingPage />
         </div>
       );
     }
@@ -77,16 +70,6 @@ class App extends React.Component {
         </div>
       );
     }
-    else if (this.state.currentPage === 'TimeIsUpPage') {
-      return (
-        <div className="ui container">
-          <TimeIsUpPage
-            score={this.state.score}
-            nextQuestion={() => this.nextQuestion()}
-          />
-        </div>
-      );
-    } 
     else if (this.state.currentPage === 'EndPage') {
       return (
         <div className="ui container">
@@ -134,7 +117,7 @@ class App extends React.Component {
 
   loadQuestions() {
     this.fetchQuestions();
-    this.setState({ currentPage: 'LoadingPage' });
+    this.setState({ isLoading: true });
     this.state.loadTimer = setInterval(function(this_app)
     { 
       if (this_app.state.json != null)
@@ -150,13 +133,14 @@ class App extends React.Component {
     if (this.state.json.results.length < NUMBER_OF_QUESTIONS)
     {
       alert("Not enough questions on the database with given difficulty and category, please change the settings.");
-      this.setState({currentPage: 'WelcomePage'});
+      this.setState({isLoading: true});
     }
     else
     {
       this.fixJson();
       this.setState({
         currentPage: 'QuestionPage',
+        isLoading: false,
         remainingTime: TIME_PER_QUESTION
       });
       this.state.gameTimer = setInterval(this.timerForGame, 1000, this);
@@ -172,7 +156,8 @@ class App extends React.Component {
       remainingTime: TIME_PER_QUESTION,
       gameTimer: null,
       loadTimer: null,
-      isJokerUsed: false
+      isJokerUsed: false,
+      isLoading: false
     });
   }
 
@@ -255,7 +240,7 @@ class App extends React.Component {
     let newRemainingTime = this_app.state.remainingTime - 1;
     this_app.setState({ remainingTime: newRemainingTime });
     if (this_app.state.remainingTime <= 0) {
-      this_app.setState({ currentPage: 'TimeIsUpPage' });
+      this_app.setState({ currentPage: 'EndPage' });
       clearInterval(this_app.state.gameTimer); 
     }
   }

@@ -1,4 +1,5 @@
 import React from 'react'
+import { Button } from 'semantic-ui-react'
 
 function InfoBar(props) {
     return (
@@ -15,12 +16,11 @@ function InfoBar(props) {
                 Remaining Time: {props.remainingTime}
                 <br></br>
                 {props.isJokerUsed ? '' : (
-                <button 
-                    className="jokerButton" 
+                <Button 
                     onClick={() => props.useJokerForThisQuestion()}
                 >
                     Use Joker
-                </button>
+                </Button>
                 )}
                 
             </div>
