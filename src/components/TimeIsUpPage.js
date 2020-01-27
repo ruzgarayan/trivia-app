@@ -1,12 +1,11 @@
 import React from 'react'
 
-function IncorrectAnswerPage(props) {
+function TimeIsUpPage(props) {
     return (
 
-        <div className="answerPage">
-
+        <div className="timeIsUpPage">
             <div>
-                Not correct this time.
+                You have run out of time.
             </div>
 
             <div>
@@ -14,7 +13,7 @@ function IncorrectAnswerPage(props) {
             </div>
 
             <button 
-                className="nextQuestionButton" 
+                className="generalButton" 
                 onClick={() => props.nextQuestion()}
             >
                 Next Question
@@ -26,4 +25,4 @@ function IncorrectAnswerPage(props) {
 }
 
 
-export default IncorrectAnswerPage;
+export default TimeIsUpPage;

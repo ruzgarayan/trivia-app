@@ -1,76 +1,75 @@
 import React from 'react';
 import './App.css';
 import WelcomePage from './components/WelcomePage'
+import LoadingPage from './components/LoadingPage'
 import QuestionPage from './components/QuestionPage'
 import CorrectAnswerPage from './components/CorrectAnswerPage';
-import IncorrectAnswerPage from './components/IncorrectAnswerPage';
+import TimeIsUpPage from './components/TimeIsUpPage';
+import EndPage from './components/EndPage';
+
+const TIME_PER_QUESTION = 15;
+const NUMBER_OF_QUESTIONS = 10;
 
 class App extends React.Component {
   constructor() {
     super();
+
     this.state = {
       currentPage: 'WelcomePage',
       json: null,
       currentQuestionIndex: 0,
       score: 0,
-      remainingTime: 10,
+      remainingTime: TIME_PER_QUESTION,
       gameTimer: null,
       loadTimer: null,
+      isJokerUsed: false,
       settings: {
-        number_of_questions: 10,
         difficulty: 'Any',
-        category: 'Any'
+        category: 0
       }
     }
-  }
-
-  fetchQuestions(url) {
-    fetch(url)
-      .then(response => response.json())
-      .then(json => this.setState({ json }));
   }
 
   render() {
     if (this.state.currentPage === 'WelcomePage') {
       return (
-        <div className="main">
+        <div className="ui container">
           <WelcomePage 
             currentDifficulty={this.state.settings.difficulty}
             currentCategory={this.state.settings.category}
-            stillLoading={false}
             onClickStartGame={() => this.loadQuestions()}
             changeDifficulty={(difficulty) => this.changeDifficulty(difficulty)}
+            changeCategory={(category) => this.changeCategory(category)}
           />
         </div>
       );
     }
     else if (this.state.currentPage === 'LoadingPage') {
       return (
-        <div className="main">
-          <WelcomePage 
-            stillLoading={true}
-            onClickStartGame={() => this.loadQuestions()}
-            changeDifficulty={(difficulty) => this.changeDifficulty(difficulty)}
-          />
+        <div className="ui container">
+          <LoadingPage />
         </div>
       );
     }
     else if (this.state.currentPage === 'QuestionPage') {
       return (
-        <div className="main">
+        <div className="ui container">
           <QuestionPage
             currentQuestion={this.state.json.results[this.state.currentQuestionIndex]}
             currentQuestionIndex={this.state.currentQuestionIndex}
+            numberOfQuestions={NUMBER_OF_QUESTIONS}
             score={this.state.score}
+            isJokerUsed={this.state.isJokerUsed}
             remainingTime={this.state.remainingTime}
             answerQuestion={(answer) => this.answerQuestion(answer)}
+            useJoker={() => this.useJoker()}
           />
         </div>
       );
     }
     else if (this.state.currentPage === 'CorrectAnswerPage') {
       return (
-        <div className="main">
+        <div className="ui container">
           <CorrectAnswerPage
             score={this.state.score}
             nextQuestion={() => this.nextQuestion()}
@@ -78,57 +77,108 @@ class App extends React.Component {
         </div>
       );
     }
-    else if (this.state.currentPage === 'IncorrectAnswerPage') {
+    else if (this.state.currentPage === 'TimeIsUpPage') {
       return (
-        <div className="main">
-          <IncorrectAnswerPage
+        <div className="ui container">
+          <TimeIsUpPage
             score={this.state.score}
             nextQuestion={() => this.nextQuestion()}
           />
         </div>
       );
-    }
+    } 
     else if (this.state.currentPage === 'EndPage') {
       return (
-        <div className="main">
-          Oyun bitti.
+        <div className="ui container">
+          <EndPage
+            score={this.state.score}
+
+            playAgain={() => this.playAgain()}
+          />
         </div>
       );
     }
     else {
       return (
-        <div className="main">
+        <div className="ui container">
+          Error.
         </div>
       );
     }
   }
 
+  fetchQuestions() {
+    const apiBase = 'https://opentdb.com/api.php?';
+    const amount = 'amount=' + NUMBER_OF_QUESTIONS;
+
+    var category;
+    if (this.state.settings.category == 0)
+      category = '';
+    else
+      category = '&category=' + this.state.settings.category;  
+
+    var difficulty;
+    if (this.state.settings.difficulty === 'Any')
+      difficulty = '';
+    else
+      difficulty = '&difficulty=' + this.state.settings.difficulty.toLowerCase();
+      
+    const questionType = '&type=multiple';
+
+    let url = apiBase + amount + category + difficulty + questionType;
+    console.log(url);
+    fetch(url)
+      .then(response => response.json())
+      .then(json => this.setState({ json }));
+  }
+
   loadQuestions() {
-    this.fetchQuestions('https://opentdb.com/api.php?amount=10&type=multiple');
+    this.fetchQuestions();
     this.setState({ currentPage: 'LoadingPage' });
-    this.state.loadTimer = setInterval(function(this_)
+    this.state.loadTimer = setInterval(function(this_app)
     { 
-      if (this_.state.json != null)
+      if (this_app.state.json != null)
       {
-        this_.startGame();
-        clearInterval(this_.state.loadTimer);
+        this_app.startGame();
+        clearInterval(this_app.state.loadTimer);
       }
     }
     , 100, this);
   }
 
   startGame() {
-    this.fixJson();
+    if (this.state.json.results.length < NUMBER_OF_QUESTIONS)
+    {
+      alert("Not enough questions on the database with given difficulty and category, please change the settings.");
+      this.setState({currentPage: 'WelcomePage'});
+    }
+    else
+    {
+      this.fixJson();
+      this.setState({
+        currentPage: 'QuestionPage',
+        remainingTime: TIME_PER_QUESTION
+      });
+      this.state.gameTimer = setInterval(this.timerForGame, 1000, this);
+    }
+  }
+
+  playAgain() {
     this.setState({
-      currentPage: 'QuestionPage',
-      remainingTime: 15
+      currentPage: 'WelcomePage',
+      json: null,
+      currentQuestionIndex: 0,
+      score: 0,
+      remainingTime: TIME_PER_QUESTION,
+      gameTimer: null,
+      loadTimer: null,
+      isJokerUsed: false
     });
-    this.state.gameTimer = setInterval(this.timerForGame, 1000, this);
   }
 
   fixJson() {
     let modifiedJson = this.state.json;
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < NUMBER_OF_QUESTIONS; i++) {
       let question = modifiedJson.results[i].question;
       let correct_answer = modifiedJson.results[i].correct_answer;
       let incorrect_answer1 = modifiedJson.results[i].incorrect_answers[0];
@@ -162,10 +212,13 @@ class App extends React.Component {
     this.setState({settings: newSettings});
   }
 
+  changeCategory(newCategory) {
+    let newSettings = this.state.settings;
+    newSettings.category = newCategory;
+    this.setState({settings: newSettings});
+  }
+
   answerQuestion(answer) {
-    console.log(answer === this.state.json.results[this.state.currentQuestionIndex].correct_answer);
-    let newQuestionIndex = this.state.currentQuestionIndex + 1;
-    this.setState({ currentQuestionIndex: newQuestionIndex });
     if (answer === this.state.json.results[this.state.currentQuestionIndex].correct_answer) {
       let newScore = this.state.score + 100;
       this.setState({
@@ -174,27 +227,37 @@ class App extends React.Component {
       });
     }
     else {
-      this.setState({ currentPage: 'IncorrectAnswerPage' });
+      this.setState({ currentPage: 'EndPage' });
     }
+    clearInterval(this.state.gameTimer);
   }
 
   nextQuestion(answer) {
-    if (this.state.settings.number_of_questions == this.state.currentQuestionIndex)
+    let newQuestionIndex = this.state.currentQuestionIndex + 1;
+    this.setState({ currentQuestionIndex: newQuestionIndex });
+    if (newQuestionIndex == NUMBER_OF_QUESTIONS)
       this.setState({ currentPage: 'EndPage' });
     else
+    {
       this.setState({
         currentPage: 'QuestionPage',
         remainingTime: 15
       });
+      this.state.gameTimer = setInterval(this.timerForGame, 1000, this);
+    }
   }
 
-  timerForGame(this_) {
-    let newRemainingTime = this_.state.remainingTime - 1;
-    this_.setState({ remainingTime: newRemainingTime });
-    if (this_.state.remainingTime <= 0) {
-      this_.setState({ currentPage: 'TimeIsUpPage' });
+  useJoker() {
+    this.setState({isJokerUsed: true});
+  }
+
+  timerForGame(this_app) {
+    let newRemainingTime = this_app.state.remainingTime - 1;
+    this_app.setState({ remainingTime: newRemainingTime });
+    if (this_app.state.remainingTime <= 0) {
+      this_app.setState({ currentPage: 'TimeIsUpPage' });
+      clearInterval(this_app.state.gameTimer); 
     }
-    console.log(newRemainingTime);
   }
 
 }

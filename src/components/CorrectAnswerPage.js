@@ -16,7 +16,7 @@ function CorrectAnswerPage(props) {
             </div>
 
             <button 
-                className="nextQuestionButton" 
+                className="generalButton" 
                 onClick={() => props.nextQuestion()}
             >
                 Next Question

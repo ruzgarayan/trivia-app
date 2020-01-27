@@ -1,5 +1,6 @@
 import React from 'react'
 import InfoBar from './InfoBar'
+import { Button } from 'semantic-ui-react'
 
 class QuestionPage extends React.Component
 {
@@ -19,8 +20,30 @@ class QuestionPage extends React.Component
         }
 
         this.state = {
-            answers: constructAnswers
+            answers: constructAnswers,
+            correctAnswer: correctAnswerIndex,
+            answersToShow: [true, true, true, true]
         }
+    }
+
+    useJokerForThisQuestion()
+    {
+        let randomNumber = Math.floor(Math.random() * 3);
+        var chosenIncorrectAnswer;
+        if (randomNumber < this.state.correctAnswer)
+            chosenIncorrectAnswer = randomNumber;
+        else
+            chosenIncorrectAnswer = randomNumber + 1;
+
+        let newAnswersToShow = this.state.answersToShow;
+        for (let i = 0; i < 4; i++)
+        {
+            if (i != chosenIncorrectAnswer && i != this.state.correctAnswer)
+                newAnswersToShow[i] = false;
+        }
+        this.setState({answersToShow: newAnswersToShow});
+
+        this.props.useJoker();
     }
 
     render() {
@@ -30,41 +53,52 @@ class QuestionPage extends React.Component
 
                 <InfoBar 
                     currentQuestionIndex={this.props.currentQuestionIndex}
+                    numberOfQuestions={this.props.numberOfQuestions}
                     score={this.props.score}
-                    remainingTime={this.props.remainingTime} 
+                    remainingTime={this.props.remainingTime}
+                    isJokerUsed={this.props.isJokerUsed}
+                    useJokerForThisQuestion={() => this.useJokerForThisQuestion()} 
                 />
 
-                <div>
-                    {this.props.currentQuestion.question}
+                <div className ="up-down-50-margin"> 
+                    <h2>{this.props.currentQuestion.question}</h2>
                 </div>
 
-                <button 
-                    className="answerButton" 
-                    onClick={() => this.props.answerQuestion(this.state.answers[0])}
-                >
-                    {this.state.answers[0]}
-                </button>
+                <div className ="up-down-50-margin">
+                    <Button 
+                        fluid ="true" size="massive" 
+                        onClick={() => this.props.answerQuestion(this.state.answers[0])}
+                    >
+                        {this.state.answersToShow[0] ? (this.state.answers[0]) : ('')}
+                    </Button>
+                </div>
 
-                <button 
-                    className="answerButton" 
-                    onClick={() => this.props.answerQuestion(this.state.answers[1])}
-                >
-                    {this.state.answers[1]}
-                </button>
+                <div className ="up-down-50-margin">
+                    <Button 
+                        fluid ="true" size="massive" 
+                        onClick={() => this.props.answerQuestion(this.state.answers[1])}
+                    >
+                        {this.state.answersToShow[1] ? (this.state.answers[1]) : ('')}
+                    </Button>
+                </div>
 
-                <button 
-                    className="answerButton" 
-                    onClick={() => this.props.answerQuestion(this.state.answers[2])}
-                >
-                    {this.state.answers[2]}
-                </button>
+                <div className ="up-down-50-margin">
+                    <Button 
+                        fluid ="true" size="massive"
+                        onClick={() => this.props.answerQuestion(this.state.answers[2])}
+                    >
+                        {this.state.answersToShow[2] ? (this.state.answers[2]) : ('')}
+                    </Button>
+                </div>
 
-                <button 
-                    className="answerButton" 
-                    onClick={() => this.props.answerQuestion(this.state.answers[3])}
-                >
-                    {this.state.answers[3]}
-                </button>
+                <div className ="up-down-50-margin">
+                    <Button 
+                        fluid ="true" size="massive"
+                        onClick={() => this.props.answerQuestion(this.state.answers[3])}
+                    >
+                        {this.state.answersToShow[3] ? (this.state.answers[3]) : ('')}
+                    </Button>
+                </div>
 
             </div>
         );
