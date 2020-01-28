@@ -13,16 +13,16 @@ class App extends React.Component {
     super();
 
     this.state = {
-      currentPage: 'WelcomePage',
-      json: null,
-      currentQuestionIndex: 0,
-      scoreFromLastQuestion: 0,
+      currentPage: 'WelcomePage', //to determine which page should be currently rendered
+      questionData: null, //this holds the data from question api
+      currentQuestionIndex: 0, //index of the question that user is currently answering 
+      scoreFromLastQuestion: 0, 
       score: 0,
       remainingTime: TIME_PER_QUESTION,
-      gameTimer: null,
-      loadTimer: null,
-      isLoading: false,
-      isJokerUsed: false,
+      gameTimer: null, //a timer to count the seconds for remaining time
+      loadTimer: null, //a timer to check if data is loaded
+      isLoading: false, //true when the question are still being loaded from the api
+      isJokerUsed: false, 
       isTimeOver: false,
       settings: {
         difficulty: 'Any',
@@ -50,7 +50,7 @@ class App extends React.Component {
       return (
         <div className="ui container">
           <QuestionPage
-            currentQuestion={this.state.json.results[this.state.currentQuestionIndex]}
+            currentQuestion={this.state.questionData.results[this.state.currentQuestionIndex]}
             currentQuestionIndex={this.state.currentQuestionIndex}
             numberOfQuestions={NUMBER_OF_QUESTIONS}
             score={this.state.score}
@@ -94,10 +94,28 @@ class App extends React.Component {
       );
     }
   }
+  
+  //Starts the loading questions process.
+  loadQuestions() {
+    this.fetchQuestions();
+    this.setState({ isLoading: true });
+    this.state.loadTimer = setInterval(function(this_app)
+    { 
+      if (this_app.state.questionData != null)
+      {
+        this_app.startGame();
+        clearInterval(this_app.state.loadTimer);
+      }
+    }
+    , 100, this);
+  }
 
-  fetchQuestions() {
+  //returns the api determined by the chosen settings.
+  getApiURL()
+  {
     const apiBase = 'https://opentdb.com/api.php?';
     const amount = 'amount=' + NUMBER_OF_QUESTIONS;
+    const questionType = '&type=multiple';
 
     var category;
     if (this.state.settings.category == 0)
@@ -111,53 +129,48 @@ class App extends React.Component {
     else
       difficulty = '&difficulty=' + this.state.settings.difficulty.toLowerCase();
       
-    const questionType = '&type=multiple';
 
     let url = apiBase + amount + category + difficulty + questionType;
+    return url;
+  }
+
+  //Fetchs the questions from the api
+  fetchQuestions() {
+    let url = this.getApiURL();
+
     console.log(url);
     fetch(url)
       .then(response => response.json())
-      .then(json => this.setState({ json }));
-  }
-
-  loadQuestions() {
-    this.fetchQuestions();
-    this.setState({ isLoading: true });
-    this.state.loadTimer = setInterval(function(this_app)
-    { 
-      if (this_app.state.json != null)
-      {
-        this_app.startGame();
-        clearInterval(this_app.state.loadTimer);
-      }
-    }
-    , 100, this);
+      .then(questionData => this.setState({ questionData }));
   }
 
   startGame() {
-    console.log(this.state.json);
-    if (this.state.json.results.length < NUMBER_OF_QUESTIONS)
+    //If there aren't enough questions with the specified settings, don't start the game and prompt the user to change the settings.
+    if (this.state.questionData.results.length < NUMBER_OF_QUESTIONS)
     {
       alert("Not enough questions on the database with given difficulty and category, please change the settings.");
-      this.setState({isLoading: true});
+      this.setState({isLoading: false});
     }
     else
     {
-      this.fixJson();
+      //Correct the question data before starting.
+      this.fixQuestionData();
       this.setState({
         currentPage: 'QuestionPage',
         isLoading: false,
         remainingTime: TIME_PER_QUESTION
       });
+      //Set up a timer of 1 second interval to control the remaining time.
       this.state.gameTimer = setInterval(this.timerForGame, 1000, this);
     }
   }
 
+  //resets the properties to play the game again.
   playAgain() {
     clearInterval(this.state.gameTimer);
     this.setState({
       currentPage: 'WelcomePage',
-      json: null,
+      questionData: null,
       currentQuestionIndex: 0,
       scoreFromLastQuestion: 0,
       score: 0,
@@ -170,14 +183,19 @@ class App extends React.Component {
     });
   }
 
-  fixJson() {
-    let modifiedJson = this.state.json;
+  //The data from the opentdb.com api comes in a form such that double quotation marks(") are
+  //written as &quot; and single ones(') are written as &039;
+  //This function replaces them with the correct ones.
+  //There are some other characters that doesn't show up as they should,
+  //but I couldn't find a way to fix them all at once. So I just fix " and ' which are the most common ones.
+  fixQuestionData() {
+    let modifiedQuestionData = this.state.questionData;
     for (let i = 0; i < NUMBER_OF_QUESTIONS; i++) {
-      let question = modifiedJson.results[i].question;
-      let correct_answer = modifiedJson.results[i].correct_answer;
-      let incorrect_answer1 = modifiedJson.results[i].incorrect_answers[0];
-      let incorrect_answer2 = modifiedJson.results[i].incorrect_answers[1];
-      let incorrect_answer3 = modifiedJson.results[i].incorrect_answers[2];
+      let question = modifiedQuestionData.results[i].question;
+      let correct_answer = modifiedQuestionData.results[i].correct_answer;
+      let incorrect_answer1 = modifiedQuestionData.results[i].incorrect_answers[0];
+      let incorrect_answer2 = modifiedQuestionData.results[i].incorrect_answers[1];
+      let incorrect_answer3 = modifiedQuestionData.results[i].incorrect_answers[2];
 
       question = question.replace(/&quot;/g, '"');
       correct_answer = correct_answer.replace(/&quot;/g, '"');
@@ -191,13 +209,13 @@ class App extends React.Component {
       incorrect_answer2 = incorrect_answer2.replace(/&#039;/g, '\'');
       incorrect_answer3 = incorrect_answer3.replace(/&#039;/g, '\'');
 
-      modifiedJson.results[i].question = question;
-      modifiedJson.results[i].correct_answer = correct_answer;
-      modifiedJson.results[i].incorrect_answers[0] = incorrect_answer1;
-      modifiedJson.results[i].incorrect_answers[1] = incorrect_answer2;
-      modifiedJson.results[i].incorrect_answers[2] = incorrect_answer3;
+      modifiedQuestionData.results[i].question = question;
+      modifiedQuestionData.results[i].correct_answer = correct_answer;
+      modifiedQuestionData.results[i].incorrect_answers[0] = incorrect_answer1;
+      modifiedQuestionData.results[i].incorrect_answers[1] = incorrect_answer2;
+      modifiedQuestionData.results[i].incorrect_answers[2] = incorrect_answer3;
     }
-    this.setState({ json: modifiedJson });
+    this.setState({ questionData: modifiedQuestionData });
   }
 
   changeDifficulty(newDifficulty) {
@@ -212,11 +230,14 @@ class App extends React.Component {
     this.setState({settings: newSettings});
   }
 
-  answerQuestion(answer) {
-    const POINTS_PER_SECOND = 10;
+  useJoker() {
+    this.setState({isJokerUsed: true});
+  }
 
-    if (answer === this.state.json.results[this.state.currentQuestionIndex].correct_answer) {
-      
+  answerQuestion(answer) {
+    const POINTS_PER_SECOND = 10; //The amount of points gained for each remaining second.
+
+    if (answer === this.state.questionData.results[this.state.currentQuestionIndex].correct_answer) {
       let scoresGained = this.state.remainingTime * POINTS_PER_SECOND;
       this.setState({
         scoreFromLastQuestion: scoresGained,
@@ -227,12 +248,13 @@ class App extends React.Component {
     else {
       this.setState({ currentPage: 'EndPage' });
     }
+    //stop the game timer 
     clearInterval(this.state.gameTimer);
   }
 
   nextQuestion(answer) {
-    let newQuestionIndex = this.state.currentQuestionIndex + 1;
-    this.setState({ currentQuestionIndex: newQuestionIndex });
+    this.setState({ currentQuestionIndex: this.state.currentQuestionIndex + 1 });
+    //If there aren't any other questions, go to the end page.
     if (newQuestionIndex == NUMBER_OF_QUESTIONS)
       this.setState({ currentPage: 'EndPage' });
     else
@@ -241,18 +263,16 @@ class App extends React.Component {
         currentPage: 'QuestionPage',
         remainingTime: TIME_PER_QUESTION
       });
+      //start the timer again for the  next question.
       this.state.gameTimer = setInterval(this.timerForGame, 1000, this);
     }
   }
 
-  useJoker() {
-    this.setState({isJokerUsed: true});
-  }
-
   timerForGame(this_app) {
-    let newRemainingTime = this_app.state.remainingTime - 1;
-    this_app.setState({ remainingTime: newRemainingTime });
+    this_app.setState({ remainingTime: this_app.state.remainingTime - 1 });
     if (this_app.state.remainingTime <= 0) {
+      //When time is over, direct the user to the end page 
+      //and let the game know that the time was over by changing the isTimeOver property.
       this_app.setState({
          currentPage: 'EndPage',
          isTimeOver: true

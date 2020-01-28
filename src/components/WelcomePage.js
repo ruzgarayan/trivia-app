@@ -1,5 +1,5 @@
 import React from 'react'
-import logo from './logo.svg'
+import logo from './logos/logo.svg'
 import DropdownButton from 'react-bootstrap/DropdownButton'
 import Dropdown from 'react-bootstrap/Dropdown'
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -7,6 +7,7 @@ import { Button } from 'semantic-ui-react'
 
 function WelcomePage(props) {
 
+    //These are the categories from "opentdb.com" and their corresponding ids.
     const categoryMap = new Map([
         [0, 'Any'],
         [9, 'General Knowledge'],  [10, 'Entertainment: Books'], [11, 'Entertainment: Film'],
@@ -23,6 +24,8 @@ function WelcomePage(props) {
     {
         let categories = categoryMap.keys();
         let output = [];
+        //Create dropdown items for each category so that they show the category's name on the screen
+        //and invoke parent's function "changeCategory" with the category id.
         for (let categoryIndex of categories)
         {
           output.push(<Dropdown.Item key={categoryIndex} onClick={() => props.changeCategory(categoryIndex)} >{categoryMap.get(categoryIndex)}</Dropdown.Item>);

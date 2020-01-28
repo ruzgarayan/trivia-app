@@ -5,24 +5,31 @@ function InfoBar(props) {
     return (
         <div className="infoBar">
             <div className="infoBarPiece">
-                Question {props.currentQuestionIndex + 1} / {props.numberOfQuestions}
+                <div className="normal-font-size">
+                    Question {props.currentQuestionIndex + 1} / {props.numberOfQuestions}
+                </div>
             </div>
+            
             <div className="infoBarPiece">
-                {props.score} 
-                <br></br>
-                Points
+                <div className="normal-font-size">
+                    {props.score} 
+                    <br></br>
+                    Points
+                </div>
             </div>
+            
             <div className="infoBarPiece">
-                Remaining Time: {props.remainingTime}
-                <br></br>
-                {props.isJokerUsed ? '' : (
-                <Button 
-                    onClick={() => props.useJokerForThisQuestion()}
-                >
-                    Use Joker
-                </Button>
+                <div className="normal-font-size">
+                    Remaining Time: {props.remainingTime}
+                </div>
+                    <br></br>   
+                    {props.isJokerUsed ? '' : (
+                    <Button 
+                        onClick={() => props.useJokerForThisQuestion()}
+                    >
+                        Use Joker
+                    </Button>
                 )}
-                
             </div>
         </div>
     );

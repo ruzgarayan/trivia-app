@@ -6,10 +6,13 @@ class QuestionPage extends React.Component
 {
     constructor(props) {
         super(props);
-        this.props = props;
 
         let constructAnswers = [];
+
+        //Choose the index that the correct question will be placed (0-3 inclusive).
         let correctAnswerIndex = Math.floor(Math.random() * 4);
+
+        //Put the answers in an array according to the chosen index above.
         let j = 0;
         for (let i = 0; i < 4; i++)
         {
@@ -25,16 +28,17 @@ class QuestionPage extends React.Component
             answersToShow: [true, true, true, true]
         }
     }
-
+    
     useJokerForThisQuestion()
     {
-        let randomNumber = Math.floor(Math.random() * 3);
-        var chosenIncorrectAnswer;
+        let randomNumber = Math.floor(Math.random() * 3); // (0-3 inclusive number)
+        var chosenIncorrectAnswer; //This represent the index of the incorrect answer that will be shown with the correct one.
         if (randomNumber < this.state.correctAnswer)
             chosenIncorrectAnswer = randomNumber;
         else
             chosenIncorrectAnswer = randomNumber + 1;
 
+        //Set the state so that only the correct answer and chosen incorrect answer will be shown while rendering.
         let newAnswersToShow = this.state.answersToShow;
         for (let i = 0; i < 4; i++)
         {
@@ -43,6 +47,7 @@ class QuestionPage extends React.Component
         }
         this.setState({answersToShow: newAnswersToShow});
 
+        //Also call the parent method so that the game knows the joker is used(It can be used only once).
         this.props.useJoker();
     }
 
