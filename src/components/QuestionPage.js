@@ -65,7 +65,7 @@ class QuestionPage extends React.Component
                     useJokerForThisQuestion={() => this.useJokerForThisQuestion()} 
                 />
 
-                <div className ="up-down-50-margin"> 
+                <div className ="down-50-margin"> 
                     <h2>{this.props.currentQuestion.question}</h2>
                 </div>
 

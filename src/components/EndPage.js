@@ -48,6 +48,8 @@ function EndPage(props) {
                 isPaused={false}
             />
 
+            <br></br>
+
             {props.wonTheGame ? (
                 <div className="big-font-size">
                     Congratulations! You have answered all the questions correct and won a total of {props.score} points.
@@ -70,6 +72,7 @@ function EndPage(props) {
                 </div>
             )}
             
+            <br></br>
 
             <Button
                 onClick={() => props.playAgain()}
