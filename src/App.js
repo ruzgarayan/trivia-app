@@ -16,12 +16,14 @@ class App extends React.Component {
       currentPage: 'WelcomePage',
       json: null,
       currentQuestionIndex: 0,
+      scoreFromLastQuestion: 0,
       score: 0,
       remainingTime: TIME_PER_QUESTION,
       gameTimer: null,
       loadTimer: null,
       isLoading: false,
       isJokerUsed: false,
+      isTimeOver: false,
       settings: {
         difficulty: 'Any',
         category: 0
@@ -64,6 +66,7 @@ class App extends React.Component {
       return (
         <div className="ui container">
           <CorrectAnswerPage
+            scoreFromLastQuestion={this.state.scoreFromLastQuestion}
             score={this.state.score}
             nextQuestion={() => this.nextQuestion()}
           />
@@ -75,7 +78,9 @@ class App extends React.Component {
         <div className="ui container">
           <EndPage
             score={this.state.score}
-
+            currentQuestionIndex={this.state.currentQuestionIndex}
+            wonTheGame={this.state.currentQuestionIndex == NUMBER_OF_QUESTIONS}
+            isTimeOver={this.state.isTimeOver}
             playAgain={() => this.playAgain()}
           />
         </div>
@@ -130,6 +135,7 @@ class App extends React.Component {
   }
 
   startGame() {
+    console.log(this.state.json);
     if (this.state.json.results.length < NUMBER_OF_QUESTIONS)
     {
       alert("Not enough questions on the database with given difficulty and category, please change the settings.");
@@ -148,16 +154,19 @@ class App extends React.Component {
   }
 
   playAgain() {
+    clearInterval(this.state.gameTimer);
     this.setState({
       currentPage: 'WelcomePage',
       json: null,
       currentQuestionIndex: 0,
+      scoreFromLastQuestion: 0,
       score: 0,
       remainingTime: TIME_PER_QUESTION,
       gameTimer: null,
       loadTimer: null,
+      isLoading: false,
       isJokerUsed: false,
-      isLoading: false
+      isTimeOver: false,
     });
   }
 
@@ -204,10 +213,14 @@ class App extends React.Component {
   }
 
   answerQuestion(answer) {
+    const POINTS_PER_SECOND = 10;
+
     if (answer === this.state.json.results[this.state.currentQuestionIndex].correct_answer) {
-      let newScore = this.state.score + 100;
+      
+      let scoresGained = this.state.remainingTime * POINTS_PER_SECOND;
       this.setState({
-        score: newScore,
+        scoreFromLastQuestion: scoresGained,
+        score: (this.state.score + scoresGained),
         currentPage: 'CorrectAnswerPage'
       });
     }
@@ -226,7 +239,7 @@ class App extends React.Component {
     {
       this.setState({
         currentPage: 'QuestionPage',
-        remainingTime: 15
+        remainingTime: TIME_PER_QUESTION
       });
       this.state.gameTimer = setInterval(this.timerForGame, 1000, this);
     }
@@ -240,7 +253,10 @@ class App extends React.Component {
     let newRemainingTime = this_app.state.remainingTime - 1;
     this_app.setState({ remainingTime: newRemainingTime });
     if (this_app.state.remainingTime <= 0) {
-      this_app.setState({ currentPage: 'EndPage' });
+      this_app.setState({
+         currentPage: 'EndPage',
+         isTimeOver: true
+        });
       clearInterval(this_app.state.gameTimer); 
     }
   }

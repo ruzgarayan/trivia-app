@@ -66,9 +66,9 @@ class QuestionPage extends React.Component
 
                 <div className ="up-down-50-margin">
                     <Button 
-                        fluid="true" size="massive" 
-                        negative={this.state.answersToShow[0] ? false : true}
-                        disabled={this.state.answersToShow[0] ? false : true}
+                        fluid={true} size="massive" 
+                        negative={!this.state.answersToShow[0]}
+                        disabled={!this.state.answersToShow[0]}
                         onClick={() => this.props.answerQuestion(this.state.answers[0])}
                     >
                         {this.state.answers[0]}
@@ -77,9 +77,9 @@ class QuestionPage extends React.Component
 
                 <div className ="up-down-50-margin">
                     <Button 
-                        fluid ="true" size="massive" 
-                        negative={this.state.answersToShow[1] ? false : true}
-                        disabled={this.state.answersToShow[1] ? false : true}
+                        fluid ={true} size="massive" 
+                        negative={!this.state.answersToShow[1]}
+                        disabled={!this.state.answersToShow[1]}
                         onClick={() => this.props.answerQuestion(this.state.answers[1])}
                     >
                         {this.state.answers[1]}
@@ -88,9 +88,9 @@ class QuestionPage extends React.Component
 
                 <div className ="up-down-50-margin">
                     <Button 
-                        fluid ="true" size="massive"
-                        negative={this.state.answersToShow[2] ? false : true}
-                        disabled={this.state.answersToShow[2] ? false : true}
+                        fluid ={true} size="massive"
+                        negative={!this.state.answersToShow[2]}
+                        disabled={!this.state.answersToShow[2]}
                         onClick={() => this.props.answerQuestion(this.state.answers[2])}
                     >
                         {this.state.answers[2]}
@@ -99,9 +99,9 @@ class QuestionPage extends React.Component
 
                 <div className ="up-down-50-margin">
                     <Button 
-                        fluid ="true" size="massive"
-                        negative={this.state.answersToShow[3] ? false : true}
-                        disabled={this.state.answersToShow[3] ? false : true}
+                        fluid ={true} size="massive"
+                        negative={!this.state.answersToShow[3]}
+                        disabled={!this.state.answersToShow[3]}
                         onClick={() => this.props.answerQuestion(this.state.answers[3])}
                     >
                         {this.state.answers[3]}

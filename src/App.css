@@ -23,18 +23,9 @@
   text-align: center;
 }
 
-.generalButton
+.big-font-size
 {
-  width: 400px;
-  height: 100px;
-  margin-top: 40px;
-  background-color: gray;
-  border: 2px solid black;
-  color: white;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
+  font-size: 30px;
 }
 
 .infoBar

@@ -33,8 +33,8 @@ function WelcomePage(props) {
     return (
         <div className="text-align-center">
             <img src={logo} className="App-logo" alt="logo" />
-            <h1>A TRIVIA GAME</h1>
-            <div className ="up-down-50-margin">
+            <div className="big-font-size">A TRIVIA GAME</div>
+            <div className="up-down-50-margin">
                 <Button
                     size="massive"
                     onClick={() => props.onClickStartGame()}
@@ -44,7 +44,7 @@ function WelcomePage(props) {
                 </Button>
             </div>
 
-            <h3>Difficulty:</h3>
+            <div className="big-font-size">Difficulty:</div>
 
             <DropdownButton
                 className="settingsDropdown"
@@ -58,7 +58,7 @@ function WelcomePage(props) {
                 <Dropdown.Item onClick={() => props.changeDifficulty('Hard')} >Hard</Dropdown.Item>
             </DropdownButton>
 
-            <h3>Category:</h3>
+            <div className="big-font-size">Category:</div>
             <DropdownButton
                 className="settingsDropdown"
                 size="lg"
