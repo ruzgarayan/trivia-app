@@ -255,7 +255,7 @@ class App extends React.Component {
   nextQuestion(answer) {
     this.setState({ currentQuestionIndex: this.state.currentQuestionIndex + 1 });
     //If there aren't any other questions, go to the end page.
-    if (newQuestionIndex == NUMBER_OF_QUESTIONS)
+    if (this.state.currentQuestionIndex + 1 == NUMBER_OF_QUESTIONS)
       this.setState({ currentPage: 'EndPage' });
     else
     {
