@@ -16,7 +16,7 @@ class QuestionPage extends React.Component
         let j = 0;
         for (let i = 0; i < 4; i++)
         {
-            if (i == correctAnswerIndex)
+            if (i === correctAnswerIndex)
                 constructAnswers.push(this.props.currentQuestion.correct_answer);
             else
                 constructAnswers.push(this.props.currentQuestion.incorrect_answers[j++]);
@@ -42,7 +42,7 @@ class QuestionPage extends React.Component
         let newAnswersToShow = this.state.answersToShow;
         for (let i = 0; i < 4; i++)
         {
-            if (i != chosenIncorrectAnswer && i != this.state.correctAnswer)
+            if (i !== chosenIncorrectAnswer && i !== this.state.correctAnswer)
                 newAnswersToShow[i] = false;
         }
         this.setState({answersToShow: newAnswersToShow});
@@ -53,7 +53,7 @@ class QuestionPage extends React.Component
 
     render() {
         return (
-            
+
             <div className="text-align-center">
 
                 <InfoBar 
