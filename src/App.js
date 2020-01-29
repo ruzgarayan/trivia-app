@@ -144,7 +144,10 @@ class App extends React.Component {
     //If there aren't enough questions with the specified settings, don't start the game and prompt the user to change the settings.
     if (this.state.questionData.results.length < NUMBER_OF_QUESTIONS) {
       alert("Not enough questions on the database with given difficulty and category, please change the settings.");
-      this.setState({ isLoading: false });
+      this.setState({ 
+        isLoading: false ,
+        questionData: null
+      });
     }
     else {
       //Correct the question data before starting.
